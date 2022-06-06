@@ -18,9 +18,13 @@ const sc = require('./sc')
 const NotFound = require('./middlewares/NotFound');
 const customError = require('./middlewares/customError');
 
+// ROUTE IMPORT
+const staffRoute = require('./routes/staffRoute')
+
 // MIDDLEWARE IMPORT
 
 // ROUTES
+app.use('/staff', staffRoute)
 
 // ERROR HANDLING
 app.use(customError)

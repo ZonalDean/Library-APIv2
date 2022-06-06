@@ -21,7 +21,12 @@ exports.syncSQL = async (type, target) => {
             await console.log(`\n'force' to force sync, 'alter' to alter sync\n`)
         }
     }
-    
-    
-    
+};
+
+exports.stringfy = (input) => {
+    console.log(JSON.stringify(input, null, 2))
+};
+
+exports.parseJSON = (input) => {
+    return JSON.parse(JSON.stringify(input))
 };
