@@ -58,11 +58,7 @@ module.exports = (sequelize, DataTypes) => {
             onDelete: 'CASCADE'
         });
 
-        Book.belongsToMany(models.Tag, {
-            through: "Book_Tags",
-            as: "Tag",
-            foreignKey: "book_id"
-        })
+        Book.belongsToMany(models.Tag, {through: "Book_Tag",})
     }
 
     return Book

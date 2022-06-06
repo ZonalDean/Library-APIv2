@@ -4,6 +4,6 @@ const staffController = require('../controllers/staffController')
 const AuthStaff = require('../middlewares/AuthStaff')
 
 router.post('/login', staffController.staffLogin)
-router.post('/newstaff', AuthStaff, staffController.newStaff)
+router.post('/newstaff',  staffController.newStaff)
 
 module.exports = router

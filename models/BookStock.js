@@ -7,9 +7,9 @@ module.exports = (sequelize, DataTypes) => {
         'BookStock', {
         status: {
             type: DataTypes.ENUM(`${cs.AVAILABLE}`, `${cs.RESERVED}`, `${cs.READY}`, `${cs.OUT}`),
-            allowNull: false
+            allowNull: false,
+            defaultValue: (`${cs.AVAILABLE}`)
         },
-        defaultValue: DataTypes.ENUM(`${cs.AVAILABLE}`),
         returnDate: {
             type: DataTypes.INTEGER
         }

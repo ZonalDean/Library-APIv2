@@ -20,11 +20,13 @@ const customError = require('./middlewares/customError');
 
 // ROUTE IMPORT
 const staffRoute = require('./routes/staffRoute')
+const bookRoute = require('./routes/bookRoute')
 
 // MIDDLEWARE IMPORT
 
 // ROUTES
 app.use('/staff', staffRoute)
+app.use('/book', bookRoute)
 
 // ERROR HANDLING
 app.use(customError)
