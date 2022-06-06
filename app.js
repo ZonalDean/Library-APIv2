@@ -13,6 +13,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // IMPORTS
+const sc = require('./sc')
 
 const NotFound = require('./middlewares/NotFound');
 const customError = require('./middlewares/customError');
@@ -24,6 +25,8 @@ const customError = require('./middlewares/customError');
 // ERROR HANDLING
 app.use(customError)
 app.use(NotFound)
+
+// sc.syncSQL('')
 
 const port = process.env.PORT || 8000
 app.listen(port, () => {
