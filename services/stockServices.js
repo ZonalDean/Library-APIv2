@@ -1,4 +1,5 @@
 const { Book, BookStock } = require('../models')
+const cs = require('../config/cs')
 
 exports.findAllByStatus = async (status) => {
 
@@ -48,6 +49,25 @@ exports.findMineByStatus = async (userId, status) => {
             attributes: ["name", "authorName", "publishDate", "coverPhoto"]
         }
     })
+
+    return result
+}
+
+exports.findRecentAvail = async () => {
+
+    const result = BookStock.findAll({
+        where: {
+            status: cs.AVAILABLE
+        },
+        order: [
+            ['updatedAt', 'DESC']
+        ],
+        group: ['bookId'],
+        attributes: ['bookId', 'updatedAt'],
+        include: {
+            model: Book
+        }
+    });
 
     return result
 }

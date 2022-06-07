@@ -5,7 +5,7 @@ const sc = require('../sc')
 const cs = require('../config/cs')
 const { Book, Tag, BookStock } = require('../models')
 const createError = require("../utils/createError");
-const sequelize = require('sequelize')
+const { sequelize, Op } = require('sequelize')
 
 // Staff
 exports.staffCreateBook = async (req, res, next) => {
@@ -99,27 +99,65 @@ exports.staffCreateBook = async (req, res, next) => {
 
 // Public
 exports.findBookById = async (req, res, next) => {
+    try {
+        const id = req.params.id
 
-    const id = req.params.id
-
-    const book = await Book.findOne({
-        attributes: ["name", "authorName", "publishDate", "coverPhoto"],
-        where: {
-            id,
-            '$BookStocks.status$': cs.AVAILABLE
-        },
-        include: {
-            model: BookStock,
-            as: 'BookStocks',
-            attributes: ["status", "id"],
-            // separate: true,
-            // limit: 2
-        },
-    });
-
-    if (!book) {
-        createError('Book with this ID does not exist', 400)
+        const book = await Book.findOne({
+            attributes: ["name", "authorName", "publishDate", "coverPhoto"],
+            where: {
+                id,
+                '$BookStocks.status$': cs.AVAILABLE
+            },
+            include: {
+                model: BookStock,
+                as: 'BookStocks',
+                attributes: ["status", "id"],
+                // separate: true,
+                // limit: 2
+            },
+        });
+    
+        if (!book) {
+            createError('Book with this ID does not exist', 400)
+        }
+    
+        res.status(201).json({ book })
+    } catch (err) {
+        next(err)
     }
+    
+}
 
-    res.status(201).json({ book })
+exports.searchBook = async (req, res, next) => {
+    try {
+
+        let { text, author, tag} = req.body
+
+        const foundBooks = await Book.findAll({
+            where: {
+                [Op.or]: [
+                    {name: {[Op.substring]: text}},
+                    {authorName: {[Op.substring]: author}},
+                ]
+            },
+            include: {
+                model: Tag,
+                where: {
+                    // name: tag
+                    name: {[Op.substring]: tag}
+                },
+                attributes: ['name']
+            }
+        });
+
+        const recentBooks = await bss.findRecentAvail()
+        // const recentBooks = await bs.findRecentlyAvailable()
+
+        console.log(JSON.stringify(recentBooks, null, 2))
+
+        res.status(201).json({ foundBooks , recentBooks})
+
+    } catch (err) {
+        next(err)
+    }
 }
