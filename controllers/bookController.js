@@ -1,4 +1,5 @@
 const bs = require('../services/bookServices')
+const bss = require('../services/stockServices')
 const ts = require('../services/tagServices')
 const sc = require('../sc')
 const cs = require('../config/cs')
@@ -6,8 +7,8 @@ const { Book, Tag, BookStock } = require('../models')
 const createError = require("../utils/createError");
 const sequelize = require('sequelize')
 
-
-exports.createBook = async (req, res, next) => {
+// Staff
+exports.staffCreateBook = async (req, res, next) => {
     try {
         const { name, authorName, publishDate, tags, number } = req.body;
 
@@ -94,6 +95,62 @@ exports.createBook = async (req, res, next) => {
     }
 }
 
+exports.staffFindStockByStatus = async (req, res, next) => {
+    try {
+
+        const status = req.params.status 
+
+        const stock = await bss.findAllByStatus(status)
+
+        res.status(201).json({ message: `all ${status} stocks`, stock })
+
+    } catch (err) {
+        next(err)
+    }
+}
+
+exports.staffUpdateStockStatus = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+
+        const stock = await bss.findById(id)
+
+        if (stock.status === cs.OUT) {
+            stock.set({
+                status: cs.AVAILABLE,
+                returnDate: null,
+                userId: null
+            })
+
+            await stock.save()
+        }
+
+        if (stock.status === cs.READY) {
+            stock.set({
+                status: cs.OUT,
+            })
+
+            await stock.save()
+        }
+
+        if (stock.status === cs.RESERVED) {
+            stock.set({
+                status: cs.READY,
+                returnDate: cs.RETURN_DATE
+            })
+
+            await stock.save()
+        }
+        
+        res.status(201).json({stock})
+    } catch (err) {
+        next(err)
+    }
+
+
+}
+
+// Public
 exports.findBookById = async (req, res, next) => {
 
     const id = req.params.id
@@ -120,9 +177,8 @@ exports.findBookById = async (req, res, next) => {
     res.status(201).json({ book })
 }
 
-// exports.getBookStock
-
-exports.reserveBook = async (req, res, next) => {
+// User
+exports.userReserveBook = async (req, res, next) => {
     try {
 
         const bookId = req.params.id;
@@ -149,16 +205,16 @@ exports.reserveBook = async (req, res, next) => {
         if (!stock) {
             createError('Book needs to be in stock to be reserved', 400)
         };
-
-        if (anyStock) {
-            createError('This book has already been reserved or borrowed', 400)
-        }
-
-        if (stock && !anyStock) {
+        
+        if (stock) {
             stock.set({
                 userId,
                 status: cs.RESERVED
             });
+        // if (anyStock) {
+        //     createError('This book has already been reserved or borrowed', 400)
+        // }
+
 
             await stock.save();
         }

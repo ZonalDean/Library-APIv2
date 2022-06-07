@@ -1,7 +1,7 @@
 require('dotenv').config;
 const express = require("express");
 const cors = require('cors')
-const {sequelize} = require('sequelize')
+const sequelize = require('sequelize')
 const morgan = require('morgan')
 
 // BASICS
@@ -21,7 +21,9 @@ const customError = require('./middlewares/customError');
 // ROUTE IMPORT
 const staffRoute = require('./routes/staffRoute')
 const userRoute = require('./routes/userRoute')
-const bookRoute = require('./routes/bookRoute')
+const bookRoute = require('./routes/bookRoute');
+const BookStock = require('./models/BookStock');
+const Book = require('./models/Book');
 
 // MIDDLEWARE IMPORT
 
@@ -34,7 +36,7 @@ app.use('/book', bookRoute)
 app.use(customError)
 app.use(NotFound)
 
-// sc.syncSQL('')
+// sc.syncSQL('alter')
 
 const port = process.env.PORT || 8000
 app.listen(port, () => {

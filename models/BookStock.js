@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: (`${cs.AVAILABLE}`)
         },
         returnDate: {
-            type: DataTypes.INTEGER
+            type: DataTypes.DATE
         }
     }, {
         underscored: true,
