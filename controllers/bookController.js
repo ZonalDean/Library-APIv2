@@ -95,60 +95,7 @@ exports.staffCreateBook = async (req, res, next) => {
     }
 }
 
-exports.staffFindStockByStatus = async (req, res, next) => {
-    try {
-
-        const status = req.params.status 
-
-        const stock = await bss.findAllByStatus(status)
-
-        res.status(201).json({ message: `all ${status} stocks`, stock })
-
-    } catch (err) {
-        next(err)
-    }
-}
-
-exports.staffUpdateStockStatus = async (req, res, next) => {
-    try {
-        const id = req.params.id;
-
-        const stock = await bss.findById(id)
-
-        if (stock.status === cs.OUT) {
-            stock.set({
-                status: cs.AVAILABLE,
-                returnDate: null,
-                userId: null
-            })
-
-            await stock.save()
-        }
-
-        if (stock.status === cs.READY) {
-            stock.set({
-                status: cs.OUT,
-            })
-
-            await stock.save()
-        }
-
-        if (stock.status === cs.RESERVED) {
-            stock.set({
-                status: cs.READY,
-                returnDate: cs.RETURN_DATE
-            })
-
-            await stock.save()
-        }
-        
-        res.status(201).json({stock})
-    } catch (err) {
-        next(err)
-    }
-
-
-}
+// User
 
 // Public
 exports.findBookById = async (req, res, next) => {
@@ -175,52 +122,4 @@ exports.findBookById = async (req, res, next) => {
     }
 
     res.status(201).json({ book })
-}
-
-// User
-exports.userReserveBook = async (req, res, next) => {
-    try {
-
-        const bookId = req.params.id;
-
-        const userId = req.user.id;
-
-        const book = await bs.findBookById(bookId);
-
-        const stock = await BookStock.findOne({
-            where: {
-                bookId: book.id,
-                status: cs.AVAILABLE,
-            }
-        });
-
-        const anyStock = await BookStock.findAll({
-            where: {
-                bookId: book.id,
-                userId
-            }
-        })
-
-        console.log(JSON.parse(JSON.stringify({ stock })))
-        if (!stock) {
-            createError('Book needs to be in stock to be reserved', 400)
-        };
-        
-        if (stock) {
-            stock.set({
-                userId,
-                status: cs.RESERVED
-            });
-        // if (anyStock) {
-        //     createError('This book has already been reserved or borrowed', 400)
-        // }
-
-
-            await stock.save();
-        }
-
-        res.status(201).json({ stock })
-    } catch (err) {
-        next(err)
-    }
 }

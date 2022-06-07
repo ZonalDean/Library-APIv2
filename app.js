@@ -21,16 +21,16 @@ const customError = require('./middlewares/customError');
 // ROUTE IMPORT
 const staffRoute = require('./routes/staffRoute')
 const userRoute = require('./routes/userRoute')
-const bookRoute = require('./routes/bookRoute');
-const BookStock = require('./models/BookStock');
-const Book = require('./models/Book');
+const publicRoute = require('./routes/publicRoute')
+
+const {Book, BookStock, Staff, Tag, User} = require('./models');
 
 // MIDDLEWARE IMPORT
 
 // ROUTES
 app.use('/staff', staffRoute)
 app.use('/user', userRoute)
-app.use('/book', bookRoute)
+app.use('/public', publicRoute)
 
 // ERROR HANDLING
 app.use(customError)
