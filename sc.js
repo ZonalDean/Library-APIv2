@@ -28,5 +28,5 @@ exports.stringfy = (input) => {
 };
 
 exports.parseJSON = (input) => {
-    return JSON.parse(JSON.stringify(input))
+    JSON.parse(JSON.stringify(input))
 };
