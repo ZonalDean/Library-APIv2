@@ -1,9 +1,7 @@
 const bs = require('../services/bookServices')
 const bss = require('../services/stockServices')
-const ts = require('../services/tagServices')
-const sc = require('../sc')
 const cs = require('../config/cs')
-const { Book, Tag, BookStock } = require('../models')
+const { BookStock } = require('../models')
 const createError = require("../utils/createError");
 const sequelize = require('sequelize')
 
@@ -11,7 +9,7 @@ const sequelize = require('sequelize')
 exports.staffFindByStatus = async (req, res, nect) => {
     try {
 
-        const status = req.params.status 
+        const status = req.params.status
 
         const stock = await bss.findAllByStatus(status)
 
@@ -22,7 +20,7 @@ exports.staffFindByStatus = async (req, res, nect) => {
     }
 }
 
-exports.staffCycleUpdateStatus = async (req,res,next) => {
+exports.staffCycleUpdateStatus = async (req, res, next) => {
     try {
         const id = req.params.id;
 
@@ -54,15 +52,15 @@ exports.staffCycleUpdateStatus = async (req,res,next) => {
 
             await stock.save()
         }
-        
-        res.status(201).json({stock})
+
+        res.status(201).json({ stock })
     } catch (err) {
         next(err)
     }
 }
 
 // USER
-exports.userReserveBook = async (req,res,next) => {
+exports.userReserveBook = async (req, res, next) => {
     try {
 
         const bookId = req.params.id;
@@ -82,13 +80,13 @@ exports.userReserveBook = async (req,res,next) => {
         if (!stock) {
             createError('Book needs to be in stock to be reserved', 400)
         };
-        
+
         if (stock) {
             stock.set({
                 userId,
                 status: cs.RESERVED
             });
-            
+
             await stock.save();
         }
 
@@ -96,4 +94,21 @@ exports.userReserveBook = async (req,res,next) => {
     } catch (err) {
         next(err)
     }
+}
+
+exports.userGetMyStocks = async (req, res, next) => {
+    try {
+
+        const userId = req.user.id
+
+        const status = req.params.status
+
+        const myStocks = await bss.findMineByStatus(userId, status)
+
+        res.status(201).json({ myStocks })
+
+    } catch (err) {
+        next(err)
+    }
+
 }

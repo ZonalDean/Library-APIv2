@@ -42,9 +42,11 @@ exports.findMineByStatus = async (userId, status) => {
             userId,
             status
         },
-        include: Book,
-        as: 'Book',
-        attributes: ["name", "authorName", "publishDate", "coverPhoto"]
+        include: {
+            model: Book,
+            as: 'Book',
+            attributes: ["name", "authorName", "publishDate", "coverPhoto"]
+        }
     })
 
     return result

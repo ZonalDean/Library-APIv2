@@ -15,5 +15,6 @@ router.post('/register', userController.userRegister)
 
 // Stock
 router.post('/reservebook/:id', AuthUser, stockController.userReserveBook)
+router.get('/mystock/:status', AuthUser, stockController.userGetMyStocks)
 
 module.exports = router
