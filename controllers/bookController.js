@@ -105,7 +105,9 @@ exports.staffCreateBook = async (req, res, next) => {
     } catch (err) {
         next(err)
     } finally {
-        fs.unlinkSync(req.file.path);
+        if (req.file) {
+            fs.unlinkSync(req.file.path);
+        }
     }
 }
 
@@ -233,7 +235,9 @@ exports.staffDeleteBookAndStock = async (req, res, next) => {
     } catch (err) {
         next(err)
     } finally {
-        fs.unlinkSync(req.file.path);
+        if (req.file) {
+            fs.unlinkSync(req.file.path);
+        }
     }
 }
 
@@ -267,6 +271,37 @@ exports.findBookById = async (req, res, next) => {
     } catch (err) {
         next(err)
     }
+
+}
+
+exports.findBooksByTag = async (req, res, next) => {
+    try {
+        const {tag} = req.body
+
+        const foundBooks = await Book.findAll({
+            where: {
+                '$BookStocks.status$': cs.AVAILABLE,
+                '$Tags.name$': tag,
+            },
+            include: [
+                {
+                    model: Tag,
+                    as: 'Tags',
+                    attributes: []
+                },
+                {
+                    model: BookStock,
+                    as: 'BookStocks',
+                    attributes: []
+                }
+            ]
+        })
+
+        res.status(201).json({foundBooks})
+    } catch (err) {
+        next(err)
+    }
+
 
 }
 

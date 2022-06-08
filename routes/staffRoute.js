@@ -20,7 +20,8 @@ router.delete('/deletebook/:id', AuthStaff, Upload.single('coverPhoto'), bookCon
 
 // Stock
 router.get('/allstock/:status', AuthStaff, stockController.staffFindByStatus)
-router.patch('/updatebook/:id', AuthStaff, stockController.staffCycleUpdateStatus)
+router.patch('/stock/:id', AuthStaff, stockController.staffCycleUpdateStatus)
+router.delete('/stock/:id', AuthStaff, stockController.deleteStockById)
 
 
 module.exports = router

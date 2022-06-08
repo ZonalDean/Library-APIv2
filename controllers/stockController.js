@@ -59,6 +59,20 @@ exports.staffCycleUpdateStatus = async (req, res, next) => {
     }
 }
 
+exports.deleteStockById = async (req, res, next) => {
+    try {
+
+        const id = req.params.id
+        const stock = await bss.findById(id)
+
+        await stock.destroy()
+
+        res.status(201).json({ message: 'stock delted' })
+    } catch (err) {
+
+    }
+}
+
 // USER
 exports.userReserveBook = async (req, res, next) => {
     try {

@@ -8,6 +8,7 @@ const bookController = require('../controllers/bookController')
 // Book
 router.get('/book/:id', bookController.findBookById)
 router.get('/booksearch', bookController.searchBook)
+router.get('/bookdisplay/', bookController.findBooksByTag)
 
 
 module.exports = router
