@@ -16,6 +16,7 @@ router.post('/newstaff',  staffController.newStaff)
 // Book
 router.post('/newbook', AuthStaff, Upload.single('coverPhoto'), bookController.staffCreateBook)
 router.patch('/updatebook/:id', AuthStaff, Upload.single('coverPhoto'), bookController.staffUpdateBook)
+router.delete('/deletebook/:id', AuthStaff, Upload.single('coverPhoto'), bookController.staffDeleteBookAndStock)
 
 // Stock
 router.get('/allstock/:status', AuthStaff, stockController.staffFindByStatus)

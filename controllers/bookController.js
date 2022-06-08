@@ -6,7 +6,7 @@ const cs = require('../config/cs')
 const { Book, Tag, BookStock } = require('../models')
 const createError = require("../utils/createError");
 const { sequelize, Op } = require('sequelize')
-const fs =require('fs')
+const fs = require('fs')
 const cloudinary = require('../utils/cloudinary')
 // Staff
 exports.staffCreateBook = async (req, res, next) => {
@@ -41,7 +41,7 @@ exports.staffCreateBook = async (req, res, next) => {
         if (req.file) {
             const result = await cloudinary.upload(req.file.path);
             coverPhoto = result.secure_url;
-          }
+        }
 
         const newBook = await Book.create({
             name: name,
@@ -52,7 +52,7 @@ exports.staffCreateBook = async (req, res, next) => {
         });
 
         // console.log(tags)
-        
+
         const tagArr = tags.split('%')
 
         console.log(tagArr)
@@ -80,9 +80,9 @@ exports.staffCreateBook = async (req, res, next) => {
                 });
                 await newBook.addTag(newTag)
             }
-            
+
         };
-        
+
         // For loop creating IndivdualBooks based on number
         for (let i = 0; i < number; i++) {
             await BookStock.create({
@@ -101,7 +101,7 @@ exports.staffCreateBook = async (req, res, next) => {
             ]
         })
 
-        res.status(201).json({ message: 'books created',  result})
+        res.status(201).json({ message: 'books created', result })
     } catch (err) {
         next(err)
     } finally {
@@ -114,7 +114,7 @@ exports.staffUpdateBook = async (req, res, next) => {
 
         const id = req.params.id
 
-        const { name, authorName, publishDate, tags } = req.body
+        const { name, authorName, publishDate, tags, number } = req.body
 
         // Remove all tags first
 
@@ -125,14 +125,13 @@ exports.staffUpdateBook = async (req, res, next) => {
             include: {
                 model: Book,
                 as: 'Books'
-            } 
+            }
         })
         const removeTagFromBook = await bs.findBookById(id);
         await removeTagFromBook.removeTag(currentTags)
         // .then
         const bookToUpdate = await bs.findBookById(id);
-        
-        
+
         if (name) {
             bookToUpdate.name = name
         }
@@ -157,10 +156,10 @@ exports.staffUpdateBook = async (req, res, next) => {
 
             // // For loop creating and adding tags
             for (i = 0; i < tagLength; i++) {
-    
+
                 const tagCurrent = tagArr.pop()
                 console.log(tagCurrent)
-                
+
                 // book
 
                 const isTagDupe = await Tag.findOne({
@@ -168,30 +167,30 @@ exports.staffUpdateBook = async (req, res, next) => {
                         name: tagCurrent
                     }
                 });
-    
+
                 if (isTagDupe) {
                     await bookToUpdate.addTag(isTagDupe)
                 }
-    
+
                 if (!isTagDupe) {
                     const newTag = await Tag.create({
                         name: tagCurrent
                     });
                     await bookToUpdate.addTag(newTag)
                 }
-                
+
             }
         }
 
-        
+
 
         if (req.file) {
-              const splited = bookToUpdate.coverPhoto.split('/');
-              const publicId = splited[splited.length - 1].split('.')[0];
-              await cloudinary.destroy(publicId);
+            const splited = bookToUpdate.coverPhoto.split('/');
+            const publicId = splited[splited.length - 1].split('.')[0];
+            await cloudinary.destroy(publicId);
             const result = await cloudinary.upload(req.file.path);
             bookToUpdate.coverPhoto = result.secure_url;
-          }
+        }
 
         await bookToUpdate.save()
 
@@ -199,15 +198,43 @@ exports.staffUpdateBook = async (req, res, next) => {
 
         const updatedBook = await bs.findBookById(id)
 
-        res.status(201).json({ message: 'book updated',  updatedBook})
+        res.status(201).json({ message: 'book updated', updatedBook })
 
     } catch (err) {
         next(err)
     } finally {
         if (req.file) {
-          fs.unlinkSync(req.file.path);
+            fs.unlinkSync(req.file.path);
         }
-      }
+    }
+}
+
+exports.staffDeleteBookAndStock = async (req, res, next) => {
+    try {
+
+        const id = req.params.id
+
+        const bookToDelete = await bs.findBookById(id)
+
+        const stocksToDelete = await BookStock.findAll({
+            where: {
+                bookId: id
+            }
+        })
+
+        const splited = bookToDelete.coverPhoto.split('/');
+        const publicId = splited[splited.length - 1].split('.')[0];
+        await cloudinary.destroy(publicId);
+
+        bookToDelete.destroy();
+        // stocksToDelete.destroy();
+
+        res.status(201).json({ message: 'resource deleted' })
+    } catch (err) {
+        next(err)
+    } finally {
+        fs.unlinkSync(req.file.path);
+    }
 }
 
 // User
