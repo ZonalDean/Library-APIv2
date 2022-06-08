@@ -76,10 +76,13 @@ exports.userReserveBook = async (req, res, next) => {
             }
         });
 
-        console.log(JSON.parse(JSON.stringify({ stock })))
         if (!stock) {
             createError('Book needs to be in stock to be reserved', 400)
         };
+
+        if (stock.userId === userId) {
+            createError('You already have resreved this book', 400)
+        }
 
         if (stock) {
             stock.set({

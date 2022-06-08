@@ -3,7 +3,8 @@ const router = express.Router();
 const staffController = require('../controllers/staffController')
 const bookController = require('../controllers/bookController')
 const stockController = require('../controllers/stockController')
-const AuthStaff = require('../middlewares/AuthStaff')
+const AuthStaff = require('../middlewares/AuthStaff');
+const Upload = require('../middlewares/Upload');
 
 
 // PATH: XXX/staff
@@ -13,10 +14,12 @@ router.post('/login', staffController.staffLogin)
 router.post('/newstaff',  staffController.newStaff)
 
 // Book
-router.post('/newbook', AuthStaff, bookController.staffCreateBook)
+router.post('/newbook', AuthStaff, Upload.single('coverPhoto'), bookController.staffCreateBook)
+router.patch('/updatebook/:id', AuthStaff, Upload.single('coverPhoto'), bookController.staffUpdateBook)
 
 // Stock
-router.post('/allstock/:status', AuthStaff, stockController.staffFindByStatus)
-router.post('/updatestock/:id', AuthStaff, stockController.staffCycleUpdateStatus)
+router.get('/allstock/:status', AuthStaff, stockController.staffFindByStatus)
+router.patch('/updatebook/:id', AuthStaff, stockController.staffCycleUpdateStatus)
+
 
 module.exports = router

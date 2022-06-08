@@ -1,10 +1,14 @@
-const {Book, BookStock} = require('../models')
+const {Book, BookStock, Tag} = require('../models')
 
 exports.findBookById = async (id) => {
     const result = await Book.findOne({
         where: {
             id
-        }
+        },
+        include: [
+            {model: Tag},
+            {model: BookStock}
+        ] 
     })
 
     return result
@@ -20,22 +24,3 @@ exports.findBookByName = async (name) => {
     return result
 };
 
-exports.findRecentlyAvailable = async () => {
-
-    const result = await Book.findAll({
-        include: {
-            model: BookStock,
-            order: [
-                ['updateAt', 'DESC']
-            ],
-            attributes: []
-        }
-        
-        
-        // order: [
-        //     [{model: BookStock, as:'Stock'}, 'updatedAt', 'DESC']
-        //     // [Book.associations.BookStock, 'updatedAt', 'DESC']
-        // ]
-    });
-    return result
-}
