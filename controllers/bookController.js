@@ -109,7 +109,7 @@ exports.staffUpdateBook = async (req, res, next) => {
 
         const id = req.params.id
 
-        const { name, authorName, publishDate, number } = req.body
+        const { name, authorName, publishDate, description } = req.body
 
         // Remove all tags first
 
@@ -138,7 +138,10 @@ exports.staffUpdateBook = async (req, res, next) => {
         if (publishDate) {
             bookToUpdate.publishDate = publishDate
         }
-
+        if (description) {
+            bookToUpdate.description = description
+        }
+        
         // if (tags) {
 
         //     // bookToUpdate.removeTags()
