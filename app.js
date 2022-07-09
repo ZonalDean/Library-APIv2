@@ -9,6 +9,7 @@ const app = express();
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'))
 }
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -37,6 +38,8 @@ app.use(customError)
 app.use(NotFound)
 
 // sc.syncSQL('alter')
+
+console.log('\n#############\n one run')
 
 const port = process.env.PORT || 8000
 app.listen(port, () => {

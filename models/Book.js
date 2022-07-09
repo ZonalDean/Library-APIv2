@@ -17,17 +17,20 @@ module.exports = (sequelize, DataTypes) => {
                     notEmpty: false
                 }
             },
-            publishDate: {
-                type: DataTypes.DATEONLY,
+            description: {
+                type: DataTypes.STRING(5000),
                 allowNull: false,
                 validate: {
                     notEmpty: false
                 }
             },
+            publishDate: {
+                type: DataTypes.DATEONLY,
+            },
             coverPhoto: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                defaultValue: 'https://res.cloudinary.com/devcloudzonal/image/upload/v1654266693/default_book_cover_2015_daqmjr.jpg',
+                defaultValue: 'https://res.cloudinary.com/devcloudzonal/image/upload/v1654678678/hjadgvdgdmxkxj1doir2.jpg',
                 validate: {
                     notEmpty: false
                 }

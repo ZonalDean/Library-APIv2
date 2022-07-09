@@ -9,6 +9,7 @@ const AuthUser = require('../middlewares/AuthUser')
 // Auth
 router.post('/login', userController.userLogin)
 router.post('/register', userController.userRegister)
+router.get('/me', AuthUser, userController.userGetMe)
 
 // Book
 
@@ -16,5 +17,6 @@ router.post('/register', userController.userRegister)
 // Stock
 router.post('/reservebook/:id', AuthUser, stockController.userReserveBook)
 router.get('/mystock/:status', AuthUser, stockController.userGetMyStocks)
+router.get('/isborrow/:bookid', AuthUser, stockController.userIsBookBorrow)
 
 module.exports = router

@@ -20,6 +20,8 @@ exports.staffLogin = async (req, res, next) => {
             createError('invalid credentials 1', 400);
         }
 
+        // console.log(staff.password)
+
         // CHECK FOR PASSWORD MATCH
         const isMatch = await bcrypt.compare(password, staff.password)
         if (!isMatch) {
@@ -28,6 +30,8 @@ exports.staffLogin = async (req, res, next) => {
         // GEN AND SEND TOKEN
         if (staff) {
             const token = genToken({ id: staff.id })
+
+            // console.log(token)
             res.status(201).json({ token });
         }
 
@@ -64,6 +68,17 @@ exports.newStaff = async (req, res, next) => {
         });
 
         res.status(200).json({ message: 'staff creation complete' })
+    } catch (err) {
+        next(err)
+    }
+}
+
+exports.getMe = async (req,res,next) => {
+    try {
+        // console.log(req.data)
+        // console.log(JSON.stringify(req.data, null, 2))
+        const user = JSON.parse(JSON.stringify(req.user));
+        res.json({user})
     } catch (err) {
         next(err)
     }

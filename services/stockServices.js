@@ -1,4 +1,4 @@
-const { Book, BookStock } = require('../models')
+const { Book, BookStock, User } = require('../models')
 const cs = require('../config/cs')
 
 exports.findAllByStatus = async (status) => {
@@ -8,11 +8,14 @@ exports.findAllByStatus = async (status) => {
         where: {
             status
         },
-        include: {
+        include:[{
             model: Book,
             as: 'Book',
-            attributes: ["name", "authorName", "publishDate", "coverPhoto"]
-        }
+        },{
+            model: User,
+            as: "User",
+            attributes: {exclude: ['password']}
+        }]
     });
 
     return result

@@ -11,17 +11,30 @@ const Upload = require('../middlewares/Upload');
 
 // Auth
 router.post('/login', staffController.staffLogin)
-router.post('/newstaff',  staffController.newStaff)
+router.post('/newstaff', staffController.newStaff)
+router.get('/me', AuthStaff, staffController.getMe)
+
 
 // Book
 router.post('/newbook', AuthStaff, Upload.single('coverPhoto'), bookController.staffCreateBook)
+router.post('/newbook/:id', AuthStaff, bookController.getBookData)
 router.patch('/updatebook/:id', AuthStaff, Upload.single('coverPhoto'), bookController.staffUpdateBook)
 router.delete('/deletebook/:id', AuthStaff, Upload.single('coverPhoto'), bookController.staffDeleteBookAndStock)
+router.get('/booksearch/:search/:tag', AuthStaff, bookController.staffSearch)
+router.get('/book/:id', AuthStaff, bookController.getBookTagsAndStock)
+
+// Tag
+router.patch('/booktags/:bookid/:tagid', AuthStaff, bookController.staffDeleteBookTag)
+router.patch('/booktags/add/:bookid/:tagname', AuthStaff, bookController.staffAddTag)
 
 // Stock
-router.get('/allstock/:status', AuthStaff, stockController.staffFindByStatus)
+// router.get('/allstock/:status', AuthStaff, stockController.staffFindByStatus)
+router.get('/allstock/:status', AuthStaff, stockController.getStocksMgmt)
+router.get('/bookstocks/:bookid', AuthStaff, stockController.getStockByBookId)
 router.patch('/stock/:id', AuthStaff, stockController.staffCycleUpdateStatus)
-router.delete('/stock/:id', AuthStaff, stockController.deleteStockById)
+router.delete('/stock/:stockid/:bookid', AuthStaff, stockController.deleteStockById)
+router.post('/stock/:bookid', AuthStaff, stockController.addStock)
+
 
 
 module.exports = router

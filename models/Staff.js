@@ -30,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
                 validate: {
                     notEmpty: false
                 }
+            },
+            isStaff: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: true
             }
         }, {
             underscored: true,

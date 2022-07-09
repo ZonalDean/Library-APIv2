@@ -19,6 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         email: {
             type: DataTypes.STRING,
+            unique: true,
             allowNull: false,
             validate: {
                 notEmpty: false
@@ -30,6 +31,10 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 notEmpty: false
             }
+        },
+        isUser: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: true
         }
     }, {
         underscored: true

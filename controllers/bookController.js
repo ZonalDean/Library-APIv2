@@ -11,17 +11,13 @@ const cloudinary = require('../utils/cloudinary')
 // Staff
 exports.staffCreateBook = async (req, res, next) => {
     try {
-        const { name, authorName, publishDate, tags, number } = req.body;
+        const { name, authorName, description } = req.body;
 
         // #1 input validation        
         if (!name) {
             createError('name required', 400)
         } if (!authorName) {
             createError('author first name required', 400)
-        } if (!publishDate) {
-            createError('publishing date is required', 400)
-        } if (!number) {
-            createError('number of books is required', 400)
         }
 
         // #2 Check if isBookDupe
@@ -46,62 +42,59 @@ exports.staffCreateBook = async (req, res, next) => {
         const newBook = await Book.create({
             name: name,
             authorName,
-            publishDate,
+            // publishDate,
             staffId: req.user.id,
-            coverPhoto
+            coverPhoto,
+            description
         });
 
-        // console.log(tags)
+        // (tags)
 
-        const tagArr = tags.split('%')
+        // const tagArr = tags.split('%')
 
-        console.log(tagArr)
-        // ORGINAL VERSION
-        const tagLength = tagArr.length
-        // // For loop creating and adding tags
-        for (i = 0; i < tagLength; i++) {
+        //     (tagArr)
+        // // ORGINAL VERSION
+        // const tagLength = tagArr.length
+        // // // For loop creating and adding tags
+        // for (i = 0; i < tagLength; i++) {
 
-            const tagCurrent = tagArr.pop()
-            console.log(tagCurrent)
+        //     const tagCurrent = tagArr.pop()
+        //         (tagCurrent)
 
-            const isTagDupe = await Tag.findOne({
-                where: {
-                    name: tagCurrent
-                }
-            });
+        //     const isTagDupe = await Tag.findOne({
+        //         where: {
+        //             name: tagCurrent
+        //         }
+        //     });
 
-            if (isTagDupe) {
-                await newBook.addTag(isTagDupe)
-            }
+        //     if (isTagDupe) {
+        //         await newBook.addTag(isTagDupe)
+        //     }
 
-            if (!isTagDupe) {
-                const newTag = await Tag.create({
-                    name: tagCurrent
-                });
-                await newBook.addTag(newTag)
-            }
+        //     if (!isTagDupe) {
+        //         const newTag = await Tag.create({
+        //             name: tagCurrent
+        //         });
+        //         await newBook.addTag(newTag)
+        //     }
 
-        };
+        // };
 
         // For loop creating IndivdualBooks based on number
-        for (let i = 0; i < number; i++) {
-            await BookStock.create({
-                bookId: newBook.id,
-                status: cs.AVAILABLE
-            })
-        };
+        // for (let i = 0; i < number; i++) {
+        //     await BookStock.create({
+        //         bookId: newBook.id,
+        //         status: cs.AVAILABLE
+        //     })
+        // };
 
-        const result = await Book.findOne({
-            where: {
-                name
-            },
-            include: [
-                { model: Tag },
-                { model: BookStock }
-            ]
-        })
+        // const result = await Book.findOne({
+        //     where: {
+        //         name
+        //     }
+        // })
 
-        res.status(201).json({ message: 'books created', result })
+        res.status(201).json({ message: 'books created', newBook })
     } catch (err) {
         next(err)
     } finally {
@@ -116,21 +109,21 @@ exports.staffUpdateBook = async (req, res, next) => {
 
         const id = req.params.id
 
-        const { name, authorName, publishDate, tags, number } = req.body
+        const { name, authorName, publishDate, number } = req.body
 
         // Remove all tags first
 
-        const currentTags = await Tag.findAll({
-            where: {
-                '$Books.id$': id
-            },
-            include: {
-                model: Book,
-                as: 'Books'
-            }
-        })
-        const removeTagFromBook = await bs.findBookById(id);
-        await removeTagFromBook.removeTag(currentTags)
+        // const currentTags = await Tag.findAll({
+        //     where: {
+        //         '$Books.id$': id
+        //     },
+        //     include: {
+        //         model: Book,
+        //         as: 'Books'
+        //     }
+        // })
+        // const removeTagFromBook = await bs.findBookById(id);
+        // await removeTagFromBook.removeTag(currentTags)
         // .then
         const bookToUpdate = await bs.findBookById(id);
 
@@ -146,43 +139,43 @@ exports.staffUpdateBook = async (req, res, next) => {
             bookToUpdate.publishDate = publishDate
         }
 
-        if (tags) {
+        // if (tags) {
 
-            // bookToUpdate.removeTags()
+        //     // bookToUpdate.removeTags()
 
-            const tagArr = tags.split('%')
+        //     const tagArr = tags.split('%')
 
-            // console.log(tagArr)
-            // ORGINAL VERSION
-            const tagLength = tagArr.length
+        //     // (tagArr)
+        //     // ORGINAL VERSION
+        //     const tagLength = tagArr.length
 
-            // // For loop creating and adding tags
-            for (i = 0; i < tagLength; i++) {
+        //     // // For loop creating and adding tags
+        //     for (i = 0; i < tagLength; i++) {
 
-                const tagCurrent = tagArr.pop()
-                console.log(tagCurrent)
+        //         const tagCurrent = tagArr.pop()
+        //             (tagCurrent)
 
-                // book
+        //         // book
 
-                const isTagDupe = await Tag.findOne({
-                    where: {
-                        name: tagCurrent
-                    }
-                });
+        //         const isTagDupe = await Tag.findOne({
+        //             where: {
+        //                 name: tagCurrent
+        //             }
+        //         });
 
-                if (isTagDupe) {
-                    await bookToUpdate.addTag(isTagDupe)
-                }
+        //         if (isTagDupe) {
+        //             await bookToUpdate.addTag(isTagDupe)
+        //         }
 
-                if (!isTagDupe) {
-                    const newTag = await Tag.create({
-                        name: tagCurrent
-                    });
-                    await bookToUpdate.addTag(newTag)
-                }
+        //         if (!isTagDupe) {
+        //             const newTag = await Tag.create({
+        //                 name: tagCurrent
+        //             });
+        //             await bookToUpdate.addTag(newTag)
+        //         }
 
-            }
-        }
+        //     }
+        // }
 
 
 
@@ -196,7 +189,7 @@ exports.staffUpdateBook = async (req, res, next) => {
 
         await bookToUpdate.save()
 
-        // console.log(JSON.stringify(bookToUpdate, null, 2))
+        // (JSON.stringify(bookToUpdate, null, 2))
 
         const updatedBook = await bs.findBookById(id)
 
@@ -241,6 +234,126 @@ exports.staffDeleteBookAndStock = async (req, res, next) => {
     }
 }
 
+exports.staffSearch = async (req, res, next) => {
+    try {
+
+        let search = req.params.search
+        let tag = req.params.tag
+
+        if (!search) {
+            search = ''
+        } if (!tag) {
+            tag = ''
+        } if (search === 'undefined') {
+            search = ''
+        } if (tag === 'all') {
+            tag = ''
+        }
+
+        const foundBooks = await Book.findAll({
+            where: {
+                [Op.or]: [
+                    { name: { [Op.substring]: search } },
+                    { authorName: { [Op.substring]: search } },
+                    { description: { [Op.substring]: search } },
+                ]
+            },
+            include: {
+                model: Tag,
+                as: "Tags",
+                where: {
+                    name: { [Op.substring]: tag }
+                },
+                attributes: ['name'],
+                separate: true
+            },
+            include: {
+                model: BookStock,
+                as: "BookStocks"
+            }
+        });
+
+        res.status(201).json({ foundBooks })
+
+    } catch (err) {
+        next(err)
+    }
+}
+
+// Tag
+exports.staffDeleteBookTag = async (req, res, next) => {
+    try {
+
+        const tagId = req.params.tagid
+        const bookId = req.params.bookid
+
+        const foundBook = await bs.findBookById(bookId)
+        const foundTag = await Tag.findOne({
+            where: { id: tagId }
+        })
+
+        await foundBook.removeTag(foundTag)
+
+        const updatedTags = await Tag.findAll({
+            include: {
+                model: Book,
+                where: {
+                    id: bookId
+                }
+            }
+        })
+
+        res.status(201).json({ updatedTags })
+    } catch (err) {
+        next(err)
+    }
+}
+
+exports.staffAddTag = async (req, res, next) => {
+    try {
+
+        const bookId = req.params.bookid
+        const tagname = req.params.tagname
+
+        const isTagDupe = await Tag.findOne({
+            where: {
+                name: tagname
+            }
+        });
+
+        const bookToUpdate = await Book.findOne({
+            where: {
+                id: bookId
+            }
+        })
+
+        if (isTagDupe) {
+            await bookToUpdate.addTag(isTagDupe)
+        }
+
+        if (!isTagDupe) {
+            const newTag = await Tag.create({
+                name: tagname
+            });
+            await bookToUpdate.addTag(newTag)
+        }
+
+        const updatedTags = await Tag.findAll({
+            include: {
+                model: Book,
+                where: {
+                    id: bookId
+                }
+            }
+        })
+
+        res.status(201).json({ updatedTags })
+
+    } catch (err) {
+        next(err)
+    }
+}
+
 // User
 
 // Public
@@ -252,15 +365,19 @@ exports.findBookById = async (req, res, next) => {
             attributes: ["name", "authorName", "publishDate", "coverPhoto"],
             where: {
                 id,
-                '$BookStocks.status$': cs.AVAILABLE
             },
-            include: {
-                model: BookStock,
-                as: 'BookStocks',
-                attributes: ["status", "id"],
-                // separate: true,
-                // limit: 2
-            },
+            include: [
+                {
+                    model: BookStock,
+                    as: 'BookStocks',
+                    attributes: ["status", "id"],
+
+                },
+                {
+                    model: Tag,
+                    as: 'Tags',
+                }
+            ]
         });
 
         if (!book) {
@@ -276,28 +393,27 @@ exports.findBookById = async (req, res, next) => {
 
 exports.findBooksByTag = async (req, res, next) => {
     try {
-        const {tag} = req.body
+        const tag = req.params.tag
 
         const foundBooks = await Book.findAll({
-            where: {
-                '$BookStocks.status$': cs.AVAILABLE,
-                '$Tags.name$': tag,
-            },
+            limit: 7,
             include: [
                 {
                     model: Tag,
                     as: 'Tags',
-                    attributes: []
+                    where: { name: tag }
                 },
                 {
                     model: BookStock,
                     as: 'BookStocks',
-                    attributes: []
+                    where: { status: cs.AVAILABLE },
+                    separate: true,
                 }
             ]
         })
 
-        res.status(201).json({foundBooks})
+        // res.status(201).json({ foundTag})
+        res.status(201).json({ foundBooks })
     } catch (err) {
         next(err)
     }
@@ -308,31 +424,150 @@ exports.findBooksByTag = async (req, res, next) => {
 exports.searchBook = async (req, res, next) => {
     try {
 
-        let { text, author, tag } = req.body
+        let search = req.params.search
+        let tag = req.params.tag
 
-        const foundBooks = await Book.findAll({
+        if (!search) {
+            search = ''
+        } if (!tag) {
+            tag = ''
+        } if (search === 'undefined') {
+            search = ''
+        } if (tag === 'all') {
+            tag = ''
+        }
+
+        const searchFilter = await Book.findAll({
             where: {
                 [Op.or]: [
-                    { name: { [Op.substring]: text } },
-                    { authorName: { [Op.substring]: author } },
+                    { name: { [Op.substring]: search } },
+                    { authorName: { [Op.substring]: search } },
+                    { description: { [Op.substring]: search } },
                 ]
             },
             include: {
-                model: Tag,
+                model: BookStock,
+                as: "BookStocks",
                 where: {
-                    // name: tag
-                    name: { [Op.substring]: tag }
+                    status: cs.AVAILABLE
                 },
-                attributes: ['name']
+                separate: true
             }
         });
 
-        const recentBooks = await bss.findRecentAvail()
+        // const tagFilter = await Book.findAll({
+        //     include: {
+        //         model: Tag,
+        //         as: "Tags",
+        //         where: {
+        //             name: tag
+        //         }
+        //     }
+        // });
+
+        const result = { ...searchFilter }
+
+        // const recentBooks = await bss.findRecentAvail()
         // const recentBooks = await bs.findRecentlyAvailable()
 
-        console.log(JSON.stringify(recentBooks, null, 2))
+        // (JSON.stringify(searchFilter, null, 2))
+        // console.log(searchFilter)
+        res.status(201).json({ result })
 
-        res.status(201).json({ foundBooks, recentBooks })
+    } catch (err) {
+        next(err)
+    }
+}
+
+exports.getDisplayWithTags = async (req, res, next) => {
+    try {
+
+        const { tag } = req.params.tag
+
+        const foundBooks = await Book.findAll({
+            limit: 7,
+            include: [
+                {
+                    model: Tag,
+                    as: 'Tags',
+                    where: { name: tag }
+                },
+                {
+                    model: BookStock,
+                    as: 'BookStocks',
+                    where: { status: cs.AVAILABLE },
+                    separate: true,
+                }
+            ]
+        })
+
+        res.status(201).json({ foundBooks })
+
+    } catch (err) {
+        next(err)
+    }
+}
+
+exports.getAllTags = async (req, res, next) => {
+    try {
+
+        const foundTags = await Tag.findAll()
+
+        res.status(201).json({ foundTags })
+
+    } catch (err) {
+        next(err)
+    }
+}
+
+exports.getBookTagsAndStock = async (req, res, next) => {
+    try {
+
+        const id = req.params.id
+
+        // console.log(bookId)
+
+        const foundBook = await Book.findOne({
+            where: { id },
+            include: [
+                {
+                    model: BookStock,
+                    as: "BookStocks"
+                },
+                {
+                    model: Tag,
+                    as: "Tags"
+                }
+            ]
+        })
+
+        res.status(201).json({ foundBook })
+    } catch (err) {
+        next(err)
+    }
+
+}
+
+exports.getBookData = async (req, res, next) => {
+    try {
+
+        const id = req.params.id
+
+        const book = await Book.findOne({
+            where: id,
+            include: [
+                {
+                    model: Tag,
+                    as: "Tags",
+                },
+                {
+                    model: BookStock,
+                    as: "Bookstocks"
+                }
+            ]
+        })
+
+        res.status(201).json({ foundBook })
 
     } catch (err) {
         next(err)

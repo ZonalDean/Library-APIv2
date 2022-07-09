@@ -28,6 +28,7 @@ exports.userLogin = async (req, res, next) => {
         // GEN AND SEND TOKEN
         if (user) {
             const token = genToken({ id: user.id })
+            console.log(token)
             res.status(201).json({ token });
         }
 
@@ -64,6 +65,17 @@ exports.userRegister = async (req, res, next) => {
         });
 
         res.status(200).json({ message: 'user created' })
+    } catch (err) {
+        next(err)
+    }
+}
+
+exports.userGetMe = async (req, res, next) => {
+    try {
+        // console.log(req)
+        // console.log(JSON.stringify(req.data, null, 2))
+        const user = JSON.parse(JSON.stringify(req.user));
+        res.json({user})
     } catch (err) {
         next(err)
     }
