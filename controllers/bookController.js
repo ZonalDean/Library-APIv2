@@ -141,7 +141,7 @@ exports.staffUpdateBook = async (req, res, next) => {
         if (description) {
             bookToUpdate.description = description
         }
-        
+
         // if (tags) {
 
         //     // bookToUpdate.removeTags()
@@ -431,52 +431,134 @@ exports.searchBook = async (req, res, next) => {
         let tag = req.params.tag
 
         if (!search) {
-            search = ''
+            search = null
         } if (!tag) {
-            tag = ''
+            tag = null
         } if (search === 'undefined') {
-            search = ''
+            search = null
+        } if (tag === 'All Tags') {
+            tag = null
         } if (tag === 'all') {
-            tag = ''
+            tag = null
         }
 
-        const searchFilter = await Book.findAll({
-            where: {
-                [Op.or]: [
-                    { name: { [Op.substring]: search } },
-                    { authorName: { [Op.substring]: search } },
-                    { description: { [Op.substring]: search } },
-                ]
-            },
-            include: {
-                model: BookStock,
-                as: "BookStocks",
+        if (tag && search) {
+            const searchFilter = await Book.findAll({
                 where: {
-                    status: cs.AVAILABLE
+                    [Op.or]: [
+                        { name: { [Op.substring]: search } },
+                        { authorName: { [Op.substring]: search } },
+                        { description: { [Op.substring]: search } },
+                    ]
                 },
-                separate: true
-            }
-        });
+                include: [
+                    {
+                        model: BookStock,
+                        as: "BookStocks",
+                        where: {
+                            status: cs.AVAILABLE
+                        },
+                        separate: true
+                    },
+                    {
+                        model: Tag,
+                        where: {
+                            name: { [Op.substring]: tag }
+                        }
+                    }
+                ]
+            });
 
-        // const tagFilter = await Book.findAll({
-        //     include: {
-        //         model: Tag,
-        //         as: "Tags",
-        //         where: {
-        //             name: tag
-        //         }
-        //     }
-        // });
+            const result = { ...searchFilter }
+            res.status(201).json({ result })
 
-        const result = { ...searchFilter }
+        }
 
-        // const recentBooks = await bss.findRecentAvail()
-        // const recentBooks = await bs.findRecentlyAvailable()
+        if (tag && !search) {
+            const searchFilter = await Book.findAll({
+                include: [
+                    {
+                        model: BookStock,
+                        as: "BookStocks",
+                        where: {
+                            status: cs.AVAILABLE
+                        },
+                        separate: true
+                    },
+                    {
+                        model: Tag,
+                        where: {
+                            name: { [Op.substring]: tag }
+                        }
+                    }
+                ]
+            });
+
+            const result = { ...searchFilter }
+            res.status(201).json({ result })
+
+        }
+
+        if (!tag && search) {
+            const searchFilter = await Book.findAll({
+                where: {
+                    [Op.or]: [
+                        { name: { [Op.substring]: search } },
+                        { authorName: { [Op.substring]: search } },
+                        { description: { [Op.substring]: search } },
+                    ]
+                },
+                include: [
+                    {
+                        model: BookStock,
+                        as: "BookStocks",
+                        where: {
+                            status: cs.AVAILABLE
+                        },
+                        separate: true
+                    },
+                    {
+                        model: Tag,
+                    }
+                ]
+            });
+
+            const result = { ...searchFilter }
+            res.status(201).json({ result })
+
+        }
+
+        if (!tag && !search) {
+            const searchFilter = await Book.findAll({
+                include: [
+                    {
+                        model: BookStock,
+                        as: "BookStocks",
+                        where: {
+                            status: cs.AVAILABLE
+                        },
+                        separate: true
+                    },
+                    {
+                        model: Tag,
+                    }
+                ]
+            });
+
+            const result = { ...searchFilter }
+            res.status(201).json({ result })
+
+        }
+
+
+
+
+        console.log(tag)
+        console.log(search)
+
 
         // (JSON.stringify(searchFilter, null, 2))
         // console.log(searchFilter)
-        res.status(201).json({ result })
-
     } catch (err) {
         next(err)
     }
